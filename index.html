@@ -3,377 +3,469 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#080d18">
-<title>FoRex bot | AI Trading Intelligence</title>
-
+<title>FoRex bot | Forex Intelligence</title>
 <style>
 :root{
- --bg:#080d18;--card:#111a2a;--card2:#172237;
- --text:#edf3ff;--muted:#8998ae;--blue:#3997ff;
- --green:#16c784;--red:#ff5268;--gold:#e8bd64;
- --border:#25334a;
+--bg:#080d18;--panel:#111b2c;--panel2:#17243a;
+--line:#263750;--txt:#edf4ff;--muted:#91a0b5;
+--blue:#399cff;--green:#18ca86;--red:#ff5268;
+--gold:#e8bd64
 }
 *{box-sizing:border-box}
-body{
- margin:0;background:var(--bg);color:var(--text);
- font-family:Arial,Helvetica,sans-serif;
- padding-bottom:35px;
-}
-header{
- padding:20px 17px 15px;
- background:linear-gradient(130deg,#101e35,#080d18);
- border-bottom:1px solid var(--border);
-}
-.brand{font-size:25px;font-weight:900;letter-spacing:1px}
-.brand span{color:var(--blue)}
-.sub{font-size:11px;color:var(--muted);margin-top:5px}
-.status{display:flex;gap:7px;margin-top:13px;flex-wrap:wrap}
-.tag{
- padding:6px 10px;border-radius:20px;font-size:10px;
- background:#17283d;color:#91c8ff;border:1px solid #28496a;
-}
-.tag.orange{color:#f2c477;border-color:#68502d}
-main{padding:15px;max-width:850px;margin:auto}
-.section-title{
- font-size:15px;font-weight:bold;margin:21px 0 11px;
- display:flex;justify-content:space-between;align-items:center;
-}
-.muted{color:var(--muted);font-size:11px}
-.card{
- background:var(--card);border:1px solid var(--border);
- border-radius:15px;padding:15px;margin-bottom:12px;
-}
+body{margin:0;background:var(--bg);color:var(--txt);font-family:Arial,sans-serif}
+header{padding:20px 16px;background:linear-gradient(130deg,#142946,#080d18);border-bottom:1px solid var(--line)}
+.logo{font-size:27px;font-weight:900;letter-spacing:1px}
+.logo span{color:var(--blue)}
+.sub{font-size:10px;color:var(--muted);margin-top:5px;letter-spacing:1px}
+.status{display:flex;gap:7px;flex-wrap:wrap;margin-top:14px}
+.tag{font-size:10px;padding:7px 10px;border-radius:20px;background:#17334a;color:#9bd1ff}
+.tag.warn{background:#392e1d;color:#f3cb7a}
+main{max-width:900px;margin:auto;padding:14px}
+h3{font-size:14px;margin:23px 0 11px}
+.card{background:var(--panel);border:1px solid var(--line);padding:15px;border-radius:15px;margin-bottom:12px}
+.muted{color:var(--muted);font-size:11px;line-height:1.6}
 .pairs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.pair{
- background:var(--card2);border:1px solid var(--border);
- border-radius:12px;padding:12px 5px;text-align:center;
- color:var(--text);cursor:pointer;
-}
-.pair.active{border:1px solid var(--blue);background:#142b48}
-.pair b{font-size:13px;display:block}
+.pair{background:var(--panel2);border:1px solid var(--line);border-radius:10px;color:white;padding:13px 3px;cursor:pointer}
+.pair.active{border:1px solid var(--blue);background:#183451}
+.pair b{display:block;font-size:13px}
 .pair small{font-size:9px;color:var(--muted)}
-button,select,input{
- font:inherit;
-}
-button{cursor:pointer}
-select,input{
- background:#0b1423;border:1px solid var(--border);
- border-radius:9px;color:var(--text);padding:11px;width:100%;
- outline:none;
-}
-button.primary{
- background:var(--blue);color:white;border:0;
- border-radius:10px;padding:12px 16px;font-weight:bold;
-}
-button.secondary{
- background:var(--card2);color:var(--text);
- border:1px solid var(--border);border-radius:10px;padding:11px;
-}
-.chartbox{
- height:390px;background:#0b1423;border-radius:12px;
- overflow:hidden;border:1px solid var(--border);
-}
-.chartbox iframe{width:100%;height:100%;border:0}
-.signal{
- text-align:center;padding:22px 12px;
- background:linear-gradient(140deg,#17243a,#101827);
- border-radius:13px;border:1px solid var(--border);
-}
-.wait{font-size:29px;font-weight:900;color:var(--gold)}
-.stats{display:grid;grid-template-columns:1fr 1fr;gap:9px}
-.stat{background:var(--card2);padding:13px;border-radius:10px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}
+.stat{background:var(--panel2);padding:12px;border-radius:10px;min-width:0}
 .stat small{display:block;color:var(--muted);font-size:10px}
-.stat b{display:block;margin-top:7px;font-size:17px}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-label{font-size:11px;color:var(--muted);display:block;margin-bottom:7px}
-.field{margin-bottom:12px}
-.upload{
- border:1px dashed #45658d;border-radius:13px;
- text-align:center;padding:22px 12px;background:#0c1728;
-}
-.upload input{display:none}
-.upload label{color:#9ccaff;font-size:13px;cursor:pointer}
-#preview{width:100%;max-height:400px;object-fit:contain;
- display:none;margin-top:12px;border-radius:10px}
-.notice{
- color:#d8bd82;background:#2a2418;border:1px solid #65502b;
- border-radius:10px;padding:12px;font-size:11px;line-height:1.6;
-}
-.record{
- padding:12px 0;border-bottom:1px solid var(--border);
- display:flex;justify-content:space-between;font-size:12px;
-}
+.stat b{display:block;font-size:17px;margin-top:7px;overflow-wrap:anywhere}
+label{display:block;font-size:10px;color:var(--muted);margin:10px 0 6px}
+input,select,button{font:inherit}
+input,select{width:100%;padding:12px;background:#0b1423;color:white;border:1px solid var(--line);border-radius:9px}
+button{cursor:pointer}
+.btn{border:0;border-radius:9px;padding:12px;background:var(--blue);color:white;font-weight:bold;width:100%}
+.btn2{background:var(--panel2);border:1px solid var(--line);color:white;border-radius:9px;padding:11px;width:100%}
+.signal{text-align:center;background:linear-gradient(130deg,#172b43,#111b2c);border-radius:13px;padding:20px;border:1px solid var(--line)}
+.signal b{font-size:32px}
+.buy{color:var(--green)}.sell{color:var(--red)}.wait{color:var(--gold)}
+.chart{width:100%;height:240px;background:#0a1321;border-radius:10px;display:block}
+.upload{border:1px dashed #46658c;border-radius:12px;padding:20px;text-align:center}
+.upload input{background:none;border:0}
+#preview{display:none;max-width:100%;max-height:350px;margin:12px auto;border-radius:10px}
+.notice{padding:12px;border:1px solid #66532d;background:#2b251a;color:#e8cd92;border-radius:10px;font-size:11px;line-height:1.6}
+.row{display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid var(--line);font-size:12px}
+.good{color:var(--green)}.bad{color:var(--red)}
+.hidden{display:none}
 footer{text-align:center;color:var(--muted);font-size:10px;padding:25px}
-@media(max-width:380px){
- .pairs{gap:5px}.pair{padding:10px 2px}
- .pair b{font-size:11px}
-}
+@media(min-width:650px){.stats{grid-template-columns:repeat(4,1fr)}}
 </style>
 </head>
-
 <body>
 <header>
- <div class="brand">FoRex <span>bot.</span></div>
- <div class="sub">AI FOREX ANALYSIS & RISK INTELLIGENCE</div>
+ <div class="logo">FoRex <span>bot.</span></div>
+ <div class="sub">FOREX ANALYSIS • SIGNAL INTELLIGENCE • RISK CONTROL</div>
  <div class="status">
-  <span class="tag">● DASHBOARD ONLINE</span>
-  <span class="tag orange">● DEMO TESTING</span>
-  <span class="tag orange">ENGINE NOT CONNECTED</span>
+  <span class="tag">● DASHBOARD READY</span>
+  <span class="tag warn" id="dataStatus">● NO MARKET DATA</span>
+  <span class="tag warn">DEMO TESTING</span>
  </div>
 </header>
 
 <main>
-
-<div class="section-title">MARKET WATCH <span class="muted">3 instruments</span></div>
+<h3>01 / MARKET WATCH</h3>
 <div class="pairs">
- <button class="pair active" onclick="selectPair('EURUSD',this)">
-  <b>EUR/USD</b><small>Euro / US Dollar</small>
- </button>
- <button class="pair" onclick="selectPair('GBPUSD',this)">
-  <b>GBP/USD</b><small>Pound / US Dollar</small>
- </button>
- <button class="pair" onclick="selectPair('USDZAR',this)">
-  <b>USD/ZAR</b><small>US Dollar / Rand</small>
- </button>
+ <button class="pair active" onclick="choosePair('EURUSD',this)"><b>EUR/USD</b><small>Euro / Dollar</small></button>
+ <button class="pair" onclick="choosePair('GBPUSD',this)"><b>GBP/USD</b><small>Pound / Dollar</small></button>
+ <button class="pair" onclick="choosePair('USDZAR',this)"><b>USD/ZAR</b><small>Dollar / Rand</small></button>
 </div>
 
-<div class="section-title">
- <span id="pairTitle">EUR/USD CHART</span>
- <span class="muted">TradingView</span>
-</div>
+<h3>02 / MARKET CHART</h3>
 <div class="card">
- <div class="field">
-  <label>CHART TIMEFRAME</label>
-  <select id="timeframe" onchange="loadChart()">
-   <option value="5">5 minutes</option>
-   <option value="15">15 minutes</option>
-   <option value="30">30 minutes</option>
-   <option value="60" selected>1 hour</option>
-   <option value="240">4 hours</option>
-   <option value="D">Daily</option>
-  </select>
+ <div class="grid">
+  <div><label>TIMEFRAME</label>
+   <select id="tf">
+    <option>M5</option><option>M15</option><option>M30</option>
+    <option selected>H1</option><option>H4</option><option>D1</option>
+   </select>
+  </div>
+  <div><label>CHART SOURCE</label>
+   <select id="chartSource" onchange="loadChart()">
+    <option value="FX">TradingView FX</option>
+    <option value="OANDA">TradingView OANDA</option>
+   </select>
+  </div>
  </div>
- <div class="chartbox">
-  <iframe id="chart" title="Forex chart"
-   src="https://www.tradingview.com/widgetembed/?symbol=FX%3AEURUSD&interval=60&theme=dark&style=1&locale=en&toolbar_bg=%230b1423&hide_top_toolbar=false&allow_symbol_change=true&save_image=false&details=true&calendar=false">
-  </iframe>
+ <div style="height:390px;margin-top:12px">
+  <iframe id="tv" title="TradingView chart" style="width:100%;height:100%;border:0;border-radius:10px" src="https://www.tradingview.com/widgetembed/?symbol=FX%3AEURUSD&interval=60&theme=dark&style=1&locale=en&allow_symbol_change=true"></iframe>
  </div>
- <p class="muted">Chart supplied by TradingView. Quotes and execution prices may differ from HFM MT5.</p>
+ <p class="muted">TradingView display is for chart viewing. Its prices are not automatically imported into our signal engine.</p>
 </div>
 
-<div class="section-title">AI SIGNAL CENTRE</div>
-<div class="signal">
- <div class="muted">CURRENT ANALYSIS</div>
- <div class="wait" id="signal">WAIT</div>
- <p class="muted" id="signalText">Waiting for verified market data and analysis engine.</p>
- <div class="stats">
-  <div class="stat"><small>CONFIDENCE</small><b>--</b></div>
-  <div class="stat"><small>MARKET TREND</small><b>--</b></div>
-  <div class="stat"><small>ENTRY PRICE</small><b>--</b></div>
-  <div class="stat"><small>TIMEFRAME</small><b id="signalTF">1H</b></div>
- </div>
+<h3>03 / IMPORT REAL MT5 CANDLES</h3>
+<div class="card">
+ <p class="muted">Export historical chart data from MT5 as CSV, then upload it here. Use the same pair and timeframe selected above.</p>
+ <label>MT5 CANDLE CSV FILE</label>
+ <input type="file" id="csvFile" accept=".csv,text/csv">
+ <button class="btn" style="margin-top:12px" onclick="importCSV()">IMPORT & ANALYSE CANDLES</button>
+ <p class="muted" id="importStatus">No candles imported yet.</p>
+ <button class="btn2" onclick="downloadTemplate()" style="margin-top:8px">DOWNLOAD CSV TEMPLATE</button>
+ <div class="muted">Required columns: Date, Time, Open, High, Low, Close. Volume is optional. A minimum of 220 valid candles is recommended.</div>
 </div>
 
-<div class="section-title">TRADE LEVELS</div>
+<h3>04 / TECHNICAL ANALYSIS ENGINE</h3>
 <div class="card">
  <div class="stats">
-  <div class="stat"><small>ENTRY</small><b>Not available</b></div>
-  <div class="stat"><small>STOP LOSS</small><b style="color:var(--red)">Not available</b></div>
-  <div class="stat"><small>TAKE PROFIT 1</small><b style="color:var(--green)">Not available</b></div>
-  <div class="stat"><small>TAKE PROFIT 2</small><b style="color:var(--green)">Not available</b></div>
+  <div class="stat"><small>EMA 50</small><b id="ema50">--</b></div>
+  <div class="stat"><small>EMA 200</small><b id="ema200">--</b></div>
+  <div class="stat"><small>RSI 14</small><b id="rsi">--</b></div>
+  <div class="stat"><small>MACD</small><b id="macd">--</b></div>
+  <div class="stat"><small>ATR 14</small><b id="atr">--</b></div>
+  <div class="stat"><small>SUPPORT</small><b id="support">--</b></div>
+  <div class="stat"><small>RESISTANCE</small><b id="resistance">--</b></div>
+  <div class="stat"><small>DATA CANDLES</small><b id="candleCount">0</b></div>
  </div>
- <p class="muted">Levels will be calculated from real candles, volatility and market structure once the analysis engine is connected.</p>
+ <p class="muted" id="trendText">Import candles to calculate technical indicators.</p>
+ <button class="btn" onclick="analyse()" style="margin-top:10px">RUN ANALYSIS</button>
 </div>
 
-<div class="section-title">SCREENSHOT ANALYSER</div>
+<h3>05 / TRADING SIGNAL</h3>
 <div class="card">
- <p class="muted">Upload a chart screenshot from MT5 or TradingView.</p>
+ <div class="signal">
+  <div class="muted">ENGINE DECISION</div>
+  <b class="wait" id="decision">WAIT</b>
+  <p class="muted" id="reason">Awaiting historical market candles.</p>
+  <div class="stats">
+   <div class="stat"><small>SIGNAL SCORE</small><b id="score">--</b></div>
+   <div class="stat"><small>CONFIDENCE ESTIMATE</small><b id="confidence">--</b></div>
+   <div class="stat"><small>MARKET TREND</small><b id="trend">--</b></div>
+   <div class="stat"><small>LAST CLOSE</small><b id="lastPrice">--</b></div>
+  </div>
+ </div>
+ <h3>Suggested trade levels</h3>
+ <div class="stats">
+  <div class="stat"><small>ENTRY</small><b id="entry">--</b></div>
+  <div class="stat"><small>STOP LOSS</small><b id="stop">--</b></div>
+  <div class="stat"><small>TAKE PROFIT 1</small><b id="tp1">--</b></div>
+  <div class="stat"><small>TAKE PROFIT 2</small><b id="tp2">--</b></div>
+ </div>
+ <p class="muted">Levels use ATR-based distances. These are analytical estimates, not guaranteed execution prices.</p>
+</div>
+
+<h3>06 / SCREENSHOT ANALYSER</h3>
+<div class="card">
  <div class="upload">
-  <label for="imageInput">
-   <b>＋ UPLOAD CHART SCREENSHOT</b>
-   <p class="muted">Tap here to select an image</p>
-  </label>
-  <input id="imageInput" type="file" accept="image/*" onchange="previewImage(event)">
-  <img id="preview" alt="Uploaded chart preview">
+  <label>SELECT YOUR MT5 OR TRADINGVIEW SCREENSHOT</label>
+  <input type="file" id="shot" accept="image/*" onchange="showImage(event)">
+  <img id="preview" alt="Chart screenshot preview">
+  <button class="btn2" onclick="document.getElementById('shot').click()">UPLOAD CHART IMAGE</button>
  </div>
- <div style="margin-top:12px">
-  <label>CHART TIMEFRAME</label>
-  <select id="imageTF">
-   <option>M5</option><option>M15</option><option>M30</option>
-   <option selected>H1</option><option>H4</option><option>D1</option>
-  </select>
- </div>
- <p class="muted">Screenshot preview is available now. AI image interpretation will be enabled through the secure backend connection.</p>
+ <p class="muted">Image preview is supported. The technical engine cannot extract reliable candle values or understand chart patterns from an image without a separate vision AI service. Import the chart's CSV candles for actual calculations.</p>
 </div>
 
-<div class="section-title">RISK CALCULATOR</div>
+<h3>07 / HISTORICAL BACKTEST</h3>
 <div class="card">
- <div class="grid2">
-  <div class="field">
-   <label>ENTRY PRICE</label>
-   <input id="entry" type="number" step="any" placeholder="Entry">
-  </div>
-  <div class="field">
-   <label>STOP LOSS</label>
-   <input id="sl" type="number" step="any" placeholder="Stop loss">
-  </div>
-  <div class="field">
-   <label>TAKE PROFIT</label>
-   <input id="tp" type="number" step="any" placeholder="Take profit">
-  </div>
-  <div class="field">
-   <label>ACCOUNT BALANCE (USD)</label>
-   <input id="balance" type="number" value="1000">
-  </div>
+ <p class="muted">Test the strategy over imported historical candles. Signals are evaluated on subsequent candles, with stop loss and take profit checked against candle highs and lows.</p>
+ <label>TEST RISK / REWARD TARGET</label>
+ <select id="backtestRR"><option value="1.5">1 : 1.5</option><option value="2" selected>1 : 2</option><option value="3">1 : 3</option></select>
+ <button class="btn" onclick="backtest()">RUN HISTORICAL BACKTEST</button>
+ <div class="stats" style="margin-top:12px">
+  <div class="stat"><small>TRADES</small><b id="btTrades">--</b></div>
+  <div class="stat"><small>WINS</small><b id="btWins">--</b></div>
+  <div class="stat"><small>LOSSES</small><b id="btLosses">--</b></div>
+  <div class="stat"><small>WIN RATE</small><b id="btRate">--</b></div>
+  <div class="stat"><small>NET R</small><b id="btNet">--</b></div>
+  <div class="stat"><small>MAX DRAWDOWN (R)</small><b id="btDD">--</b></div>
  </div>
- <button class="primary" style="width:100%" onclick="calculateRisk()">CALCULATE RISK / REWARD</button>
- <div id="riskResult" class="muted" style="margin-top:14px">Enter trade levels to calculate the risk/reward ratio.</div>
+ <p class="muted" id="btNote">No backtest completed.</p>
 </div>
 
-<div class="section-title">DEMO TRADE JOURNAL</div>
+<h3>08 / RISK & POSITION CALCULATOR</h3>
 <div class="card">
- <p class="muted">Record trades you test on your HFM MT5 demo account.</p>
- <div class="grid2">
-  <div class="field">
-   <label>PAIR</label>
-   <select id="journalPair">
-    <option>EUR/USD</option><option>GBP/USD</option><option>USD/ZAR</option>
-   </select>
-  </div>
-  <div class="field">
-   <label>RESULT</label>
-   <select id="journalResult">
-    <option>Win</option><option>Loss</option><option>Break-even</option>
-   </select>
-  </div>
+ <div class="grid">
+  <div><label>ACCOUNT BALANCE (USD)</label><input id="balance" type="number" value="1000"></div>
+  <div><label>RISK PER TRADE (%)</label><input id="riskPct" type="number" value="1" min="0.1" max="5" step="0.1"></div>
+  <div><label>ENTRY</label><input id="calcEntry" type="number" step="any"></div>
+  <div><label>STOP LOSS</label><input id="calcSL" type="number" step="any"></div>
  </div>
- <button class="secondary" style="width:100%" onclick="addTrade()">SAVE DEMO RESULT</button>
- <div id="journal" style="margin-top:12px"></div>
+ <button class="btn" onclick="positionCalc()">CALCULATE POSITION RISK</button>
+ <div id="positionResult" class="muted" style="margin-top:12px">Enter entry and stop loss.</div>
+ <p class="muted">Forex lot sizing requires the pair's pip value, contract size and account currency. This calculator reports price risk and risk budget, not a verified lot size.</p>
 </div>
 
+<h3>09 / DEMO TRADE JOURNAL</h3>
+<div class="card">
+ <div class="grid">
+  <div><label>PAIR</label><select id="jPair"><option>EUR/USD</option><option>GBP/USD</option><option>USD/ZAR</option></select></div>
+  <div><label>RESULT</label><select id="jResult"><option>Win</option><option>Loss</option><option>Break-even</option></select></div>
+  <div><label>RESULT IN R</label><input id="jR" type="number" step="0.1" placeholder="e.g. 2 or -1"></div>
+  <div><label>NOTES</label><input id="jNotes" placeholder="Optional notes"></div>
+ </div>
+ <button class="btn" onclick="saveTrade()">SAVE DEMO TRADE</button>
+ <div class="stats" style="margin-top:12px">
+  <div class="stat"><small>JOURNAL TRADES</small><b id="jCount">0</b></div>
+  <div class="stat"><small>JOURNAL WIN RATE</small><b id="jWinRate">0%</b></div>
+ </div>
+ <div id="journal"></div>
+ <button class="btn2" onclick="exportJournal()" style="margin-top:12px">EXPORT JOURNAL CSV</button>
+</div>
+
+<h3>10 / DATA & SAFETY</h3>
 <div class="notice">
- <b>IMPORTANT — DEVELOPMENT STATUS</b><br>
- FoRex bot is currently a dashboard prototype. It does not yet receive verified live forex candles, analyse uploaded images with AI, or send trading signals. No displayed example is a real trading recommendation. Connect the secure backend before using its analysis for trading.
+ <b>Current operating mode: offline analysis + imported market data.</b><br>
+ The chart widget is external. The analysis engine only uses candle data you import. There is no verified live market feed, broker connection, AI screenshot interpretation or automatic trade execution in this version. Backtest results are historical simulations and do not predict future returns. Always account for spread, slippage, commissions and candle ordering.
 </div>
-
 </main>
-
-<footer>
- FoRex bot © 2026 · Built for disciplined forex analysis<br>
- Trading involves substantial risk. Demo test before considering real funds.
-</footer>
+<footer>FoRex bot © 2026 · Independent Forex Analysis Platform · Demo testing only</footer>
 
 <script>
-let currentPair="EURUSD";
+"use strict";
+let pair="EURUSD", candles=[], lastSignal=null, journal=[];
+const $=id=>document.getElementById(id);
+const fmt=n=>Number(n).toFixed(pair==="USDZAR"?4:5);
 
-function selectPair(pair,button){
- currentPair=pair;
+function choosePair(p,b){
+ pair=p;
  document.querySelectorAll(".pair").forEach(x=>x.classList.remove("active"));
- button.classList.add("active");
- document.getElementById("pairTitle").textContent=
-  pair.slice(0,3)+"/"+pair.slice(3)+" CHART";
- document.getElementById("journalPair").value=
-  pair.slice(0,3)+"/"+pair.slice(3);
+ b.classList.add("active");
  loadChart();
+ candles=[];
+ clearAnalysis();
+ $("importStatus").textContent="Pair changed. Import matching "+p+" candles.";
+ $("jPair").value=p.slice(0,3)+"/"+p.slice(3);
 }
-
 function loadChart(){
- const tf=document.getElementById("timeframe").value;
- document.getElementById("signalTF").textContent=
-  tf==="D"?"1D":tf==="240"?"4H":tf==="60"?"1H":tf+"M";
- const url="https://www.tradingview.com/widgetembed/?symbol=FX%3A"+
- currentPair+"&interval="+tf+
- "&theme=dark&style=1&locale=en&toolbar_bg=%230b1423"+
- "&hide_top_toolbar=false&allow_symbol_change=true&save_image=false";
- document.getElementById("chart").src=url;
+ const tf=$("tf").value;
+ const source=$("chartSource").value;
+ $("tv").src="https://www.tradingview.com/widgetembed/?symbol="+
+ source+"%3A"+pair+"&interval="+
+ ({M5:"5",M15:"15",M30:"30",H1:"60",H4:"240",D1:"D"}[tf])+
+ "&theme=dark&style=1&locale=en&allow_symbol_change=true";
 }
-
-function previewImage(event){
- const file=event.target.files[0];
- if(!file)return;
- if(!file.type.startsWith("image/")){
-  alert("Please select an image.");return;
+function clearAnalysis(){
+ ["ema50","ema200","rsi","macd","atr","support","resistance","lastPrice","entry","stop","tp1","tp2","score","confidence","trend"].forEach(id=>$(id).textContent="--");
+ $("decision").textContent="WAIT";$("decision").className="wait";
+ $("reason").textContent="Import matching candles.";
+ $("candleCount").textContent="0";$("trendText").textContent="No candle data.";
+ $("dataStatus").textContent="● NO MARKET DATA";
+ lastSignal=null;
+}
+function downloadTemplate(){
+ const csv="Date,Time,Open,High,Low,Close,Volume\n2026.01.01,00:00,1.10000,1.10100,1.09900,1.10050,100\n";
+ download(csv,"forex-candle-template.csv","text/csv");
+}
+function download(content,name,type){
+ const a=document.createElement("a"),url=URL.createObjectURL(new Blob([content],{type}));
+ a.href=url;a.download=name;a.click();URL.revokeObjectURL(url);
+}
+function parseCSV(text){
+ const lines=text.replace(/^\uFEFF/,"").trim().split(/\r?\n/);
+ if(lines.length<3)throw Error("CSV needs a header and at least two candle rows.");
+ const split=line=>line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(x=>x.trim().replace(/^"|"$/g,""));
+ const headers=split(lines[0]).map(x=>x.toLowerCase().replace(/[\s_]/g,""));
+ const find=names=>headers.findIndex(h=>names.includes(h));
+ const oi=find(["open"]),hi=find(["high"]),li=find(["low"]),ci=find(["close"]);
+ const di=find(["date","datetime","time"]),ti=find(["time"]);
+ if([oi,hi,li,ci].some(x=>x<0))throw Error("Could not find Open, High, Low and Close columns.");
+ let out=[];
+ for(let i=1;i<lines.length;i++){
+  if(!lines[i].trim())continue;
+  const c=split(lines[i]);
+  const n=x=>Number(String(c[x]??"").replace(/\s/g,"").replace(",","."));
+  const o={open:n(oi),high:n(hi),low:n(li),close:n(ci),date:di>=0?c[di]:""};
+  if(![o.open,o.high,o.low,o.close].every(Number.isFinite))continue;
+  if(o.high<o.low||o.high<Math.max(o.open,o.close)||o.low>Math.min(o.open,o.close))continue;
+  out.push(o);
  }
- const reader=new FileReader();
- reader.onload=function(e){
-  const img=document.getElementById("preview");
-  img.src=e.target.result;
-  img.style.display="block";
- };
- reader.readAsDataURL(file);
+ return out;
 }
-
-function calculateRisk(){
- const entry=Number(document.getElementById("entry").value);
- const sl=Number(document.getElementById("sl").value);
- const tp=Number(document.getElementById("tp").value);
- const balance=Number(document.getElementById("balance").value);
- const out=document.getElementById("riskResult");
-
- if(!entry||!sl||!tp||!balance||entry===sl){
-  out.textContent="Please enter valid entry, stop-loss, take-profit and balance values.";
-  return;
+async function importCSV(){
+ const f=$("csvFile").files[0];
+ if(!f){$("importStatus").textContent="Choose a CSV file first.";return}
+ try{
+  const data=parseCSV(await f.text());
+  if(data.length<220)throw Error("Only "+data.length+" valid candles found. At least 220 are recommended for EMA 200.");
+  candles=data;
+  $("importStatus").textContent="Imported "+data.length+" valid candles successfully.";
+  $("dataStatus").textContent="● "+data.length+" IMPORTED CANDLES";
+  $("candleCount").textContent=data.length;
+  analyse();
+ }catch(e){$("importStatus").textContent="Import error: "+e.message}
+}
+function ema(values,period){
+ const k=2/(period+1),out=[];
+ let v=values.slice(0,period).reduce((a,b)=>a+b,0)/period;
+ for(let i=0;i<period-1;i++)out.push(null);
+ out.push(v);
+ for(let i=period;i<values.length;i++){v=values[i]*k+v*(1-k);out.push(v)}
+ return out;
+}
+function rsi(values,p=14){
+ const out=Array(values.length).fill(null);
+ if(values.length<=p)return out;
+ let gain=0,loss=0;
+ for(let i=1;i<=p;i++){let d=values[i]-values[i-1];gain+=Math.max(d,0);loss+=Math.max(-d,0)}
+ let ag=gain/p,al=loss/p;
+ out[p]=al===0?100:100-100/(1+ag/al);
+ for(let i=p+1;i<values.length;i++){
+  let d=values[i]-values[i-1];
+  ag=(ag*(p-1)+Math.max(d,0))/p;
+  al=(al*(p-1)+Math.max(-d,0))/p;
+  out[i]=al===0?100:100-100/(1+ag/al);
  }
- const risk=Math.abs(entry-sl);
- const reward=Math.abs(tp-entry);
- const ratio=reward/risk;
- const riskPct=(risk/entry)*100;
- const estimatedLoss=balance*0.01;
- out.innerHTML=
-  "<b>Risk / Reward: 1 : "+ratio.toFixed(2)+"</b><br><br>"+
-  "Stop distance: "+risk.toFixed(5)+"<br>"+
-  "Target distance: "+reward.toFixed(5)+"<br>"+
-  "Price risk: "+riskPct.toFixed(3)+"%<br>"+
-  "Illustrative 1% account risk: $"+estimatedLoss.toFixed(2);
+ return out;
 }
-
+function atr(data,p=14){
+ let tr=data.map((c,i)=>i===0?c.high-c.low:
+ Math.max(c.high-c.low,Math.abs(c.high-data[i-1].close),Math.abs(c.low-data[i-1].close)));
+ const out=Array(data.length).fill(null);
+ if(data.length<=p)return out;
+ let v=tr.slice(1,p+1).reduce((a,b)=>a+b,0)/p;
+ out[p]=v;
+ for(let i=p+1;i<data.length;i++){v=(v*(p-1)+tr[i])/p;out[i]=v}
+ return out;
+}
+function indicators(data){
+ const close=data.map(c=>c.close);
+ const e50=ema(close,50),e200=ema(close,200);
+ const rs=rsi(close),a=atr(data);
+ const fast=ema(close,12),slow=ema(close,26);
+ const m=fast.map((v,i)=>v===null||slow[i]===null?null:v-slow[i]);
+ const valid=m.filter(v=>v!==null);
+ const sig=ema(valid,9);
+ const signal=Array(m.length).fill(null);
+ let j=0;
+ for(let i=0;i<m.length;i++)if(m[i]!==null)signal[i]=sig[j++];
+ const hist=m.map((v,i)=>v===null||signal[i]===null?null:v-signal[i]);
+ return {close,e50,e200,rs,a,m,hist};
+}
+function evaluate(data,index){
+ const x=indicators(data.slice(0,index+1));
+ const i=index,c=data[i],prev=data[i-1];
+ if(!x.e200[i]||!x.rs[i]||!x.a[i]||!x.hist[i])return null;
+ let score=0,reasons=[];
+ if(x.e50[i]>x.e200[i]){score++;reasons.push("EMA bullish")}else{score--;reasons.push("EMA bearish")}
+ if(c.close>x.e50[i])score+=1;else score-=1;
+ if(x.rs[i]>50&&x.rs[i]<70){score++;reasons.push("RSI bullish")}
+ else if(x.rs[i]<50&&x.rs[i]>30){score--;reasons.push("RSI bearish")}
+ else if(x.rs[i]>=70||x.rs[i]<=30)reasons.push("RSI extreme");
+ if(x.hist[i]>0){score++;reasons.push("MACD positive")}
+ else{score--;reasons.push("MACD negative")}
+ const bullish=score>=3,bearish=score<=-3;
+ let decision=bullish?"BUY":bearish?"SELL":"WAIT";
+ return {decision,score,reasons,entry:c.close,atr:x.a[i],rsi:x.rs[i],
+ ema50:x.e50[i],ema200:x.e200[i],hist:x.hist[i]};
+}
+function analyse(){
+ if(candles.length<220){$("reason").textContent="Import at least 220 valid candles first.";return}
+ const i=candles.length-1,x=indicators(candles),s=evaluate(candles,i);
+ if(!s){$("reason").textContent="Insufficient valid indicator history.";return}
+ const lows=candles.slice(-30).map(c=>c.low),highs=candles.slice(-30).map(c=>c.high);
+ const support=Math.min(...lows),resistance=Math.max(...highs);
+ const confidence=Math.min(85,50+Math.abs(s.score)*7);
+ $("ema50").textContent=fmt(s.ema50);
+ $("ema200").textContent=fmt(s.ema200);
+ $("rsi").textContent=s.rsi.toFixed(1);
+ $("macd").textContent=s.hist.toFixed(6);
+ $("atr").textContent=fmt(s.atr);
+ $("support").textContent=fmt(support);
+ $("resistance").textContent=fmt(resistance);
+ $("lastPrice").textContent=fmt(s.entry);
+ $("trend").textContent=s.ema50>s.ema200?"BULLISH":"BEARISH";
+ $("trendText").textContent="Indicator calculation from "+candles.length+" imported candles.";
+ $("score").textContent=s.score+"/4";
+ $("confidence").textContent=confidence+"% score estimate";
+ $("decision").textContent=s.decision;
+ $("decision").className=s.decision==="BUY"?"buy":s.decision==="SELL"?"sell":"wait";
+ $("reason").textContent=s.reasons.join(" · ")+(s.decision==="WAIT"?" · No clear setup":"");
+ const buy=s.decision==="BUY";
+ const sell=s.decision==="SELL";
+ const stop=buy?s.entry-1.5*s.atr:s.entry+1.5*s.atr;
+ const tp1=buy?s.entry+1.5*s.atr:s.entry-1.5*s.atr;
+ const tp2=buy?s.entry+3*s.atr:s.entry-3*s.atr;
+ $("entry").textContent=s.decision==="WAIT"?"--":fmt(s.entry);
+ $("stop").textContent=s.decision==="WAIT"?"--":fmt(stop);
+ $("tp1").textContent=s.decision==="WAIT"?"--":fmt(tp1);
+ $("tp2").textContent=s.decision==="WAIT"?"--":fmt(tp2);
+ lastSignal={...s,stop,tp1,tp2,pair};
+ $("calcEntry").value=s.entry;
+ $("calcSL").value=s.decision==="WAIT"?"":stop;
+}
+function backtest(){
+ if(candles.length<250){$("btNote").textContent="Import at least 250 candles.";return}
+ const rr=Number($("backtestRR").value);
+ let trades=[],equity=0,peak=0,dd=0;
+ for(let i=220;i<candles.length-2;i++){
+  const s=evaluate(candles,i);
+  if(!s||s.decision==="WAIT")continue;
+  const risk=s.atr*1.5;
+  const stop=s.decision==="BUY"?s.entry-risk:s.entry+risk;
+  const target=s.decision==="BUY"?s.entry+risk*rr:s.entry-risk*rr;
+  let result=null;
+  for(let j=i+1;j<candles.length;j++){
+   const c=candles[j];
+   const sl=s.decision==="BUY"?c.low<=stop:c.high>=stop;
+   const tp=s.decision==="BUY"?c.high>=target:c.low<=target;
+   if(sl&&tp){result=-1;break}
+   if(sl){result=-1;break}
+   if(tp){result=rr;break}
+  }
+  if(result===null)continue;
+  trades.push(result);equity+=result;peak=Math.max(peak,equity);
+  dd=Math.max(dd,peak-equity);
+  i+=2;
+ }
+ const wins=trades.filter(t=>t>0).length,losses=trades.filter(t=>t<0).length;
+ const rate=trades.length?wins/trades.length*100:0;
+ $("btTrades").textContent=trades.length;
+ $("btWins").textContent=wins;$("btLosses").textContent=losses;
+ $("btRate").textContent=rate.toFixed(1)+"%";
+ $("btNet").textContent=equity.toFixed(1)+"R";
+ $("btDD").textContent=dd.toFixed(1)+"R";
+ $("btNote").textContent=trades.length?
+ "Historical simulation only. Includes conservative assumption that stop loss wins when both levels are touched in one candle. Spread, slippage and commission are not included.":
+ "No completed trades met the strategy rules.";
+}
+function positionCalc(){
+ const bal=Number($("balance").value),pct=Number($("riskPct").value);
+ const en=Number($("calcEntry").value),sl=Number($("calcSL").value);
+ if(!(bal>0&&pct>0&&pct<=5&&en>0&&sl>0&&en!==sl)){
+ $("positionResult").textContent="Enter valid positive balance, risk, entry and stop values. Risk must be 5% or less.";return}
+ $("positionResult").innerHTML="Risk budget: <b>$"+(bal*pct/100).toFixed(2)+
+ "</b><br>Price distance to stop: <b>"+Math.abs(en-sl).toFixed(5)+
+ "</b><br>Price movement risk: <b>"+(Math.abs(en-sl)/en*100).toFixed(3)+"%</b>";
+}
 function getJournal(){
- try{return JSON.parse(localStorage.getItem("forexJournal")||"[]")}
- catch(e){return []}
+ try{return JSON.parse(localStorage.getItem("forexJournalV2")||"[]")}catch(e){return []}
 }
-
+function saveTrade(){
+ const r=Number($("jR").value);
+ if(!$("jR").value||!Number.isFinite(r)){alert("Enter the result in R, e.g. 2 or -1.");return}
+ const arr=getJournal();
+ arr.push({pair:$("jPair").value,result:$("jResult").value,r,notes:$("jNotes").value,date:new Date().toISOString()});
+ localStorage.setItem("forexJournalV2",JSON.stringify(arr));
+ $("jR").value="";$("jNotes").value="";renderJournal();
+}
 function renderJournal(){
- const trades=getJournal();
- const box=document.getElementById("journal");
- if(!trades.length){
-  box.innerHTML='<p class="muted">No demo trades recorded yet.</p>';
-  return;
- }
- const wins=trades.filter(t=>t.result==="Win").length;
- const losses=trades.filter(t=>t.result==="Loss").length;
- const rate=trades.length?(wins/trades.length*100):0;
- box.innerHTML=
-  '<div class="stats">'+
-  '<div class="stat"><small>RECORDED TRADES</small><b>'+trades.length+'</b></div>'+
-  '<div class="stat"><small>WIN RATE</small><b>'+rate.toFixed(1)+'%</b></div>'+
-  '</div>'+
-  '<p class="muted">Wins: '+wins+' · Losses: '+losses+'</p>'+
-  trades.slice().reverse().map(t=>
-   '<div class="record"><span>'+t.pair+' · '+t.date+'</span><b>'+t.result+'</b></div>'
-  ).join("")+
-  '<button class="secondary" style="width:100%;margin-top:12px" onclick="clearJournal()">CLEAR JOURNAL</button>';
+ const a=getJournal(),wins=a.filter(t=>t.result==="Win").length;
+ $("jCount").textContent=a.length;
+ $("jWinRate").textContent=(a.length?wins/a.length*100:0).toFixed(1)+"%";
+ $("journal").innerHTML=a.slice(-12).reverse().map(t=>
+ '<div class="row"><span>'+t.pair+' · '+new Date(t.date).toLocaleDateString()+
+ '<br><span class="muted">'+(t.notes||"No notes")+'</span></span><b class="'+
+ (t.r>0?"good":t.r<0?"bad":"")+'">'+t.result+" · "+t.r+"R</b></div>'
+ ).join("");
 }
-
-function addTrade(){
- const trades=getJournal();
- trades.push({
-  pair:document.getElementById("journalPair").value,
-  result:document.getElementById("journalResult").value,
-  date:new Date().toLocaleDateString()
- });
- localStorage.setItem("forexJournal",JSON.stringify(trades));
- renderJournal();
+function exportJournal(){
+ const a=getJournal();
+ if(!a.length){alert("No journal trades to export.");return}
+ const rows=[["Pair","Result","R","Notes","Date"],...a.map(t=>[t.pair,t.result,t.r,t.notes,t.date])];
+ download(rows.map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(",")).join("\n"),"forex-journal.csv","text/csv");
 }
-
-function clearJournal(){
- if(confirm("Delete all recorded demo trades?")){
-  localStorage.removeItem("forexJournal");
-  renderJournal();
- }
+function showImage(e){
+ const f=e.target.files[0];if(!f)return;
+ if(!f.type.startsWith("image/")){alert("Select an image.");return}
+ const r=new FileReader();
+ r.onload=()=>{$("preview").src=r.result;$("preview").style.display="block"};
+ r.readAsDataURL(f);
 }
-
-renderJournal();
+renderJournal();loadChart();
 </script>
 </body>
 </html>
