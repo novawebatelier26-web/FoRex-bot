@@ -1,0 +1,379 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#080d18">
+<title>FoRex bot | AI Trading Intelligence</title>
+
+<style>
+:root{
+ --bg:#080d18;--card:#111a2a;--card2:#172237;
+ --text:#edf3ff;--muted:#8998ae;--blue:#3997ff;
+ --green:#16c784;--red:#ff5268;--gold:#e8bd64;
+ --border:#25334a;
+}
+*{box-sizing:border-box}
+body{
+ margin:0;background:var(--bg);color:var(--text);
+ font-family:Arial,Helvetica,sans-serif;
+ padding-bottom:35px;
+}
+header{
+ padding:20px 17px 15px;
+ background:linear-gradient(130deg,#101e35,#080d18);
+ border-bottom:1px solid var(--border);
+}
+.brand{font-size:25px;font-weight:900;letter-spacing:1px}
+.brand span{color:var(--blue)}
+.sub{font-size:11px;color:var(--muted);margin-top:5px}
+.status{display:flex;gap:7px;margin-top:13px;flex-wrap:wrap}
+.tag{
+ padding:6px 10px;border-radius:20px;font-size:10px;
+ background:#17283d;color:#91c8ff;border:1px solid #28496a;
+}
+.tag.orange{color:#f2c477;border-color:#68502d}
+main{padding:15px;max-width:850px;margin:auto}
+.section-title{
+ font-size:15px;font-weight:bold;margin:21px 0 11px;
+ display:flex;justify-content:space-between;align-items:center;
+}
+.muted{color:var(--muted);font-size:11px}
+.card{
+ background:var(--card);border:1px solid var(--border);
+ border-radius:15px;padding:15px;margin-bottom:12px;
+}
+.pairs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.pair{
+ background:var(--card2);border:1px solid var(--border);
+ border-radius:12px;padding:12px 5px;text-align:center;
+ color:var(--text);cursor:pointer;
+}
+.pair.active{border:1px solid var(--blue);background:#142b48}
+.pair b{font-size:13px;display:block}
+.pair small{font-size:9px;color:var(--muted)}
+button,select,input{
+ font:inherit;
+}
+button{cursor:pointer}
+select,input{
+ background:#0b1423;border:1px solid var(--border);
+ border-radius:9px;color:var(--text);padding:11px;width:100%;
+ outline:none;
+}
+button.primary{
+ background:var(--blue);color:white;border:0;
+ border-radius:10px;padding:12px 16px;font-weight:bold;
+}
+button.secondary{
+ background:var(--card2);color:var(--text);
+ border:1px solid var(--border);border-radius:10px;padding:11px;
+}
+.chartbox{
+ height:390px;background:#0b1423;border-radius:12px;
+ overflow:hidden;border:1px solid var(--border);
+}
+.chartbox iframe{width:100%;height:100%;border:0}
+.signal{
+ text-align:center;padding:22px 12px;
+ background:linear-gradient(140deg,#17243a,#101827);
+ border-radius:13px;border:1px solid var(--border);
+}
+.wait{font-size:29px;font-weight:900;color:var(--gold)}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.stat{background:var(--card2);padding:13px;border-radius:10px}
+.stat small{display:block;color:var(--muted);font-size:10px}
+.stat b{display:block;margin-top:7px;font-size:17px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+label{font-size:11px;color:var(--muted);display:block;margin-bottom:7px}
+.field{margin-bottom:12px}
+.upload{
+ border:1px dashed #45658d;border-radius:13px;
+ text-align:center;padding:22px 12px;background:#0c1728;
+}
+.upload input{display:none}
+.upload label{color:#9ccaff;font-size:13px;cursor:pointer}
+#preview{width:100%;max-height:400px;object-fit:contain;
+ display:none;margin-top:12px;border-radius:10px}
+.notice{
+ color:#d8bd82;background:#2a2418;border:1px solid #65502b;
+ border-radius:10px;padding:12px;font-size:11px;line-height:1.6;
+}
+.record{
+ padding:12px 0;border-bottom:1px solid var(--border);
+ display:flex;justify-content:space-between;font-size:12px;
+}
+footer{text-align:center;color:var(--muted);font-size:10px;padding:25px}
+@media(max-width:380px){
+ .pairs{gap:5px}.pair{padding:10px 2px}
+ .pair b{font-size:11px}
+}
+</style>
+</head>
+
+<body>
+<header>
+ <div class="brand">FoRex <span>bot.</span></div>
+ <div class="sub">AI FOREX ANALYSIS & RISK INTELLIGENCE</div>
+ <div class="status">
+  <span class="tag">● DASHBOARD ONLINE</span>
+  <span class="tag orange">● DEMO TESTING</span>
+  <span class="tag orange">ENGINE NOT CONNECTED</span>
+ </div>
+</header>
+
+<main>
+
+<div class="section-title">MARKET WATCH <span class="muted">3 instruments</span></div>
+<div class="pairs">
+ <button class="pair active" onclick="selectPair('EURUSD',this)">
+  <b>EUR/USD</b><small>Euro / US Dollar</small>
+ </button>
+ <button class="pair" onclick="selectPair('GBPUSD',this)">
+  <b>GBP/USD</b><small>Pound / US Dollar</small>
+ </button>
+ <button class="pair" onclick="selectPair('USDZAR',this)">
+  <b>USD/ZAR</b><small>US Dollar / Rand</small>
+ </button>
+</div>
+
+<div class="section-title">
+ <span id="pairTitle">EUR/USD CHART</span>
+ <span class="muted">TradingView</span>
+</div>
+<div class="card">
+ <div class="field">
+  <label>CHART TIMEFRAME</label>
+  <select id="timeframe" onchange="loadChart()">
+   <option value="5">5 minutes</option>
+   <option value="15">15 minutes</option>
+   <option value="30">30 minutes</option>
+   <option value="60" selected>1 hour</option>
+   <option value="240">4 hours</option>
+   <option value="D">Daily</option>
+  </select>
+ </div>
+ <div class="chartbox">
+  <iframe id="chart" title="Forex chart"
+   src="https://www.tradingview.com/widgetembed/?symbol=FX%3AEURUSD&interval=60&theme=dark&style=1&locale=en&toolbar_bg=%230b1423&hide_top_toolbar=false&allow_symbol_change=true&save_image=false&details=true&calendar=false">
+  </iframe>
+ </div>
+ <p class="muted">Chart supplied by TradingView. Quotes and execution prices may differ from HFM MT5.</p>
+</div>
+
+<div class="section-title">AI SIGNAL CENTRE</div>
+<div class="signal">
+ <div class="muted">CURRENT ANALYSIS</div>
+ <div class="wait" id="signal">WAIT</div>
+ <p class="muted" id="signalText">Waiting for verified market data and analysis engine.</p>
+ <div class="stats">
+  <div class="stat"><small>CONFIDENCE</small><b>--</b></div>
+  <div class="stat"><small>MARKET TREND</small><b>--</b></div>
+  <div class="stat"><small>ENTRY PRICE</small><b>--</b></div>
+  <div class="stat"><small>TIMEFRAME</small><b id="signalTF">1H</b></div>
+ </div>
+</div>
+
+<div class="section-title">TRADE LEVELS</div>
+<div class="card">
+ <div class="stats">
+  <div class="stat"><small>ENTRY</small><b>Not available</b></div>
+  <div class="stat"><small>STOP LOSS</small><b style="color:var(--red)">Not available</b></div>
+  <div class="stat"><small>TAKE PROFIT 1</small><b style="color:var(--green)">Not available</b></div>
+  <div class="stat"><small>TAKE PROFIT 2</small><b style="color:var(--green)">Not available</b></div>
+ </div>
+ <p class="muted">Levels will be calculated from real candles, volatility and market structure once the analysis engine is connected.</p>
+</div>
+
+<div class="section-title">SCREENSHOT ANALYSER</div>
+<div class="card">
+ <p class="muted">Upload a chart screenshot from MT5 or TradingView.</p>
+ <div class="upload">
+  <label for="imageInput">
+   <b>＋ UPLOAD CHART SCREENSHOT</b>
+   <p class="muted">Tap here to select an image</p>
+  </label>
+  <input id="imageInput" type="file" accept="image/*" onchange="previewImage(event)">
+  <img id="preview" alt="Uploaded chart preview">
+ </div>
+ <div style="margin-top:12px">
+  <label>CHART TIMEFRAME</label>
+  <select id="imageTF">
+   <option>M5</option><option>M15</option><option>M30</option>
+   <option selected>H1</option><option>H4</option><option>D1</option>
+  </select>
+ </div>
+ <p class="muted">Screenshot preview is available now. AI image interpretation will be enabled through the secure backend connection.</p>
+</div>
+
+<div class="section-title">RISK CALCULATOR</div>
+<div class="card">
+ <div class="grid2">
+  <div class="field">
+   <label>ENTRY PRICE</label>
+   <input id="entry" type="number" step="any" placeholder="Entry">
+  </div>
+  <div class="field">
+   <label>STOP LOSS</label>
+   <input id="sl" type="number" step="any" placeholder="Stop loss">
+  </div>
+  <div class="field">
+   <label>TAKE PROFIT</label>
+   <input id="tp" type="number" step="any" placeholder="Take profit">
+  </div>
+  <div class="field">
+   <label>ACCOUNT BALANCE (USD)</label>
+   <input id="balance" type="number" value="1000">
+  </div>
+ </div>
+ <button class="primary" style="width:100%" onclick="calculateRisk()">CALCULATE RISK / REWARD</button>
+ <div id="riskResult" class="muted" style="margin-top:14px">Enter trade levels to calculate the risk/reward ratio.</div>
+</div>
+
+<div class="section-title">DEMO TRADE JOURNAL</div>
+<div class="card">
+ <p class="muted">Record trades you test on your HFM MT5 demo account.</p>
+ <div class="grid2">
+  <div class="field">
+   <label>PAIR</label>
+   <select id="journalPair">
+    <option>EUR/USD</option><option>GBP/USD</option><option>USD/ZAR</option>
+   </select>
+  </div>
+  <div class="field">
+   <label>RESULT</label>
+   <select id="journalResult">
+    <option>Win</option><option>Loss</option><option>Break-even</option>
+   </select>
+  </div>
+ </div>
+ <button class="secondary" style="width:100%" onclick="addTrade()">SAVE DEMO RESULT</button>
+ <div id="journal" style="margin-top:12px"></div>
+</div>
+
+<div class="notice">
+ <b>IMPORTANT — DEVELOPMENT STATUS</b><br>
+ FoRex bot is currently a dashboard prototype. It does not yet receive verified live forex candles, analyse uploaded images with AI, or send trading signals. No displayed example is a real trading recommendation. Connect the secure backend before using its analysis for trading.
+</div>
+
+</main>
+
+<footer>
+ FoRex bot © 2026 · Built for disciplined forex analysis<br>
+ Trading involves substantial risk. Demo test before considering real funds.
+</footer>
+
+<script>
+let currentPair="EURUSD";
+
+function selectPair(pair,button){
+ currentPair=pair;
+ document.querySelectorAll(".pair").forEach(x=>x.classList.remove("active"));
+ button.classList.add("active");
+ document.getElementById("pairTitle").textContent=
+  pair.slice(0,3)+"/"+pair.slice(3)+" CHART";
+ document.getElementById("journalPair").value=
+  pair.slice(0,3)+"/"+pair.slice(3);
+ loadChart();
+}
+
+function loadChart(){
+ const tf=document.getElementById("timeframe").value;
+ document.getElementById("signalTF").textContent=
+  tf==="D"?"1D":tf==="240"?"4H":tf==="60"?"1H":tf+"M";
+ const url="https://www.tradingview.com/widgetembed/?symbol=FX%3A"+
+ currentPair+"&interval="+tf+
+ "&theme=dark&style=1&locale=en&toolbar_bg=%230b1423"+
+ "&hide_top_toolbar=false&allow_symbol_change=true&save_image=false";
+ document.getElementById("chart").src=url;
+}
+
+function previewImage(event){
+ const file=event.target.files[0];
+ if(!file)return;
+ if(!file.type.startsWith("image/")){
+  alert("Please select an image.");return;
+ }
+ const reader=new FileReader();
+ reader.onload=function(e){
+  const img=document.getElementById("preview");
+  img.src=e.target.result;
+  img.style.display="block";
+ };
+ reader.readAsDataURL(file);
+}
+
+function calculateRisk(){
+ const entry=Number(document.getElementById("entry").value);
+ const sl=Number(document.getElementById("sl").value);
+ const tp=Number(document.getElementById("tp").value);
+ const balance=Number(document.getElementById("balance").value);
+ const out=document.getElementById("riskResult");
+
+ if(!entry||!sl||!tp||!balance||entry===sl){
+  out.textContent="Please enter valid entry, stop-loss, take-profit and balance values.";
+  return;
+ }
+ const risk=Math.abs(entry-sl);
+ const reward=Math.abs(tp-entry);
+ const ratio=reward/risk;
+ const riskPct=(risk/entry)*100;
+ const estimatedLoss=balance*0.01;
+ out.innerHTML=
+  "<b>Risk / Reward: 1 : "+ratio.toFixed(2)+"</b><br><br>"+
+  "Stop distance: "+risk.toFixed(5)+"<br>"+
+  "Target distance: "+reward.toFixed(5)+"<br>"+
+  "Price risk: "+riskPct.toFixed(3)+"%<br>"+
+  "Illustrative 1% account risk: $"+estimatedLoss.toFixed(2);
+}
+
+function getJournal(){
+ try{return JSON.parse(localStorage.getItem("forexJournal")||"[]")}
+ catch(e){return []}
+}
+
+function renderJournal(){
+ const trades=getJournal();
+ const box=document.getElementById("journal");
+ if(!trades.length){
+  box.innerHTML='<p class="muted">No demo trades recorded yet.</p>';
+  return;
+ }
+ const wins=trades.filter(t=>t.result==="Win").length;
+ const losses=trades.filter(t=>t.result==="Loss").length;
+ const rate=trades.length?(wins/trades.length*100):0;
+ box.innerHTML=
+  '<div class="stats">'+
+  '<div class="stat"><small>RECORDED TRADES</small><b>'+trades.length+'</b></div>'+
+  '<div class="stat"><small>WIN RATE</small><b>'+rate.toFixed(1)+'%</b></div>'+
+  '</div>'+
+  '<p class="muted">Wins: '+wins+' · Losses: '+losses+'</p>'+
+  trades.slice().reverse().map(t=>
+   '<div class="record"><span>'+t.pair+' · '+t.date+'</span><b>'+t.result+'</b></div>'
+  ).join("")+
+  '<button class="secondary" style="width:100%;margin-top:12px" onclick="clearJournal()">CLEAR JOURNAL</button>';
+}
+
+function addTrade(){
+ const trades=getJournal();
+ trades.push({
+  pair:document.getElementById("journalPair").value,
+  result:document.getElementById("journalResult").value,
+  date:new Date().toLocaleDateString()
+ });
+ localStorage.setItem("forexJournal",JSON.stringify(trades));
+ renderJournal();
+}
+
+function clearJournal(){
+ if(confirm("Delete all recorded demo trades?")){
+  localStorage.removeItem("forexJournal");
+  renderJournal();
+ }
+}
+
+renderJournal();
+</script>
+</body>
+</html>
