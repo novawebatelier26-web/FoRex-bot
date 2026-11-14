@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FoRex bot</title>
+<style>
+:root{--bg:#0a0f1c;--card:#111a2e;--box:#18233b;--tx:#e6ecf8;--mu:#8fa0bf;--ac:#3b9cff;--g:#2fd18b;--r:#ff5c6c;--y:#f0b94a}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:16px -apple-system,Segoe UI,Arial,sans-serif;padding:16px;max-width:640px;margin:auto}
+h1{font-size:28px;margin:8px 0 2px}h1 span{color:var(--ac)}h2{font-size:14px;letter-spacing:1px;margin:26px 0 10px}
+.sub{color:var(--mu);font-size:12px;letter-spacing:1px}.card{background:var(--card);border:1px solid #223051;border-radius:14px;padding:14px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}.row3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.box{background:var(--box);border-radius:10px;padding:10px}.box small{color:var(--mu);font-size:11px;display:block;margin-bottom:4px}.box b{font-size:18px}
+button,select,input,textarea{font:inherit;color:var(--tx);background:var(--box);border:1px solid #2a3a5e;border-radius:10px;padding:12px;width:100%}
+textarea{resize:vertical;min-height:54px}
+button.p{background:var(--ac);border:0;font-weight:700;color:#fff}button.pair.on{border-color:var(--ac)}
+button.bias{margin-bottom:0;padding:9px}button.bias.on{border-color:var(--ac);background:#1c2c4a}
+.msg{font-size:13px;color:var(--mu);margin:8px 0;white-space:pre-wrap}.err{color:var(--r)}.ok{color:var(--g)}
+.sig{text-align:center;font-size:44px;font-weight:800;margin:6px 0}.BUY{color:var(--g)}.SELL{color:var(--r)}.WAIT{color:var(--y)}
+#tv,#tvnews{border-radius:10px;overflow:hidden}iframe{border:0;border-radius:10px;width:100%}
+.note{background:#2a2110;border:1px solid #6b5420;color:#f0d58a;border-radius:10px;padding:12px;font-size:13px}
+.rd{margin-bottom:18px}.rd:last-child{margin-bottom:0}.rdname{font-size:13px;font-weight:700;margin-bottom:8px}
+</style></head><body>
+<h1>FoRex <span>bot.</span></h1>
+<div class="sub">CHART • NEWS • ECONOMIC CALENDAR • PASTED READINGS • RULE-BASED SIGNAL</div>
+<div class="msg ok">Frontend only — no backend, no database, no screenshot upload. Price data comes from the free services below; everything you paste stays on your phone.</div>
+
+<h2>01 / MARKET WATCH</h2>
+<div class="row3" id="pairs"></div>
+
+<h2>02 / MARKET CHART</h2>
+<div class="card"><div id="tv" style="height:340px"></div></div>
+
+<h2>03 / PRICE DATA FOR THE SIGNAL</h2>
+<div class="card">
+<div class="msg" id="livemsg">EUR/USD and GBP/USD: tap for free live daily prices (ECB rates via frankfurter.app, no key).</div>
+<button class="p" id="live">GET LIVE DAILY DATA</button>
+<div class="msg">Gold has no free key-free source, so for XAU/USD import an MT5 CSV instead.</div>
+<input type="file" id="csv" accept=".csv,.txt,text/csv,text/plain,*/*" style="margin-top:4px">
+<button class="p" id="imp" style="margin-top:10px">IMPORT CSV INSTEAD</button>
+<div class="msg" id="impmsg">No data loaded yet.</div>
+</div>
+
+<h2>04 / TECHNICAL READING</h2>
+<div class="card"><div class="row">
+<div class="box"><small>EMA 50</small><b id="e50">--</b></div><div class="box"><small>EMA 200</small><b id="e200">--</b></div>
+<div class="box"><small>RSI 14</small><b id="rsi">--</b></div><div class="box"><small>MACD HIST</small><b id="macd">--</b></div>
+<div class="box"><small>VOLATILITY</small><b id="atr">--</b></div><div class="box"><small>CANDLES</small><b id="cnt">0</b></div>
+</div></div>
+
+<h2>05 / ECONOMIC CALENDAR (Tradays)</h2>
+<div class="card"><iframe src="https://www.tradays.com/en/economic-calendar/widget?mode=2&dateFormat=DMY" height="420"></iframe></div>
+
+<h2>06 / MARKET NEWS</h2>
+<div class="card" id="tvnews"></div>
+
+<h2>07 / PASTE YOUR SCREENSHOT READINGS</h2>
+<div class="card">
+<div class="msg">Take a screenshot of the chart, the news and the calendar. Send each to Claude or ChatGPT, ask "is this bullish, bearish or neutral for [pair] and why", then paste the answer below — the box reads it and sets Bullish/Neutral/Bearish for you. You can still tap a button yourself to override.</div>
+
+<div class="rd"><div class="rdname">CHART SCREENSHOT READING</div>
+<div class="row3"><button class="bias" data-g="chart" data-v="1">BULLISH</button><button class="bias" data-g="chart" data-v="0">NEUTRAL</button><button class="bias" data-g="chart" data-v="-1">BEARISH</button></div>
+<textarea id="t_chart" placeholder="Paste what Claude/ChatGPT said about the chart" style="margin-top:8px"></textarea></div>
+
+<div class="rd"><div class="rdname">NEWS SCREENSHOT READING</div>
+<div class="row3"><button class="bias" data-g="news" data-v="1">BULLISH</button><button class="bias" data-g="news" data-v="0">NEUTRAL</button><button class="bias" data-g="news" data-v="-1">BEARISH</button></div>
+<textarea id="t_news" placeholder="Paste what Claude/ChatGPT said about the news" style="margin-top:8px"></textarea></div>
+
+<div class="rd"><div class="rdname">CALENDAR SCREENSHOT READING</div>
+<div class="row3"><button class="bias" data-g="cal" data-v="1">BULLISH</button><button class="bias" data-g="cal" data-v="0">NEUTRAL</button><button class="bias" data-g="cal" data-v="-1">BEARISH</button></div>
+<textarea id="t_cal" placeholder="Paste what Claude/ChatGPT said about the calendar" style="margin-top:8px"></textarea>
+<label style="display:flex;align-items:center;gap:8px;margin-top:10px;font-size:13px"><input type="checkbox" id="avoid" style="width:auto">High-impact event due very soon — avoid trading</label></div>
+
+</div>
+
+<h2>08 / FINAL SIGNAL</h2>
+<div class="card"><div class="sub" style="text-align:center">ENGINE DECISION</div><div class="sig WAIT" id="sig">WAIT</div>
+<div class="msg" id="sigmsg" style="text-align:center">Load price data and set your readings first.</div>
+<div class="msg" id="timebox" style="text-align:center"></div>
+<div class="row"><div class="box"><small>TECHNICAL SCORE</small><b id="score">--</b></div><div class="box"><small>COMBINED SCORE</small><b id="combo">--</b></div>
+<div class="box"><small>ENTRY</small><b id="en">--</b></div><div class="box"><small>STOP LOSS</small><b id="sl">--</b></div>
+<div class="box"><small>TAKE PROFIT 1 (2R)</small><b id="tp1">--</b></div><div class="box"><small>TAKE PROFIT 2 (3R)</small><b id="tp2">--</b></div></div>
+<div class="msg">Combined score = technical score (double weight) + chart + news + calendar readings. Needs a clear majority to say BUY or SELL; otherwise it waits.</div></div>
+
+<h2>09 / RISK CALCULATOR</h2>
+<div class="card"><div class="row"><div><small class="sub">BALANCE (USD)</small><input id="bal" type="number" value="1000"></div><div><small class="sub">RISK PER TRADE (%)</small><input id="rk" type="number" value="1"></div>
+<div><small class="sub">ENTRY</small><input id="rEn" type="number" step="any"></div><div><small class="sub">STOP LOSS</small><input id="rSl" type="number" step="any"></div></div>
+<button class="p" id="rc">CALCULATE</button><div class="msg" id="rmsg">Enter entry and stop loss.</div></div>
+
+<h2>10 / DEMO TRADE JOURNAL</h2>
+<div class="card"><div class="row"><div><small class="sub">PAIR</small><select id="jp"><option>XAU/USD</option><option>EUR/USD</option><option>GBP/USD</option></select></div>
+<div><small class="sub">RESULT IN R (e.g. 2 or -1)</small><input id="jr" type="number" step="any"></div></div>
+<input id="jn" placeholder="Notes (optional)" style="margin-bottom:10px"><button class="p" id="js">SAVE DEMO TRADE</button>
+<div class="row" style="margin-top:10px"><div class="box"><small>TRADES</small><b id="jt">0</b></div><div class="box"><small>WIN RATE</small><b id="jw">0%</b></div></div>
+<button id="jx" style="margin-top:10px">EXPORT JOURNAL CSV</button></div>
+
+<h2>11 / SAFETY</h2>
+<div class="note">Everything here runs in your browser only — nothing saved to a server. Live data is daily closes, not real-time ticks. Readings you paste are opinions from an AI looking at a screenshot, not verified facts. This is not financial advice. Demo trading only until you've independently tested and validated the system.</div>
+<div class="sub" style="text-align:center;margin:20px 0">FoRex bot © 2026</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const PAIRS=[["XAU/USD","OANDA:XAUUSD",null,"Gold / Dollar"],["EUR/USD","FX:EURUSD","EUR","Euro / Dollar"],["GBP/USD","FX:GBPUSD","GBP","Pound / Dollar"]];
+let pair=0,C=[],S=null;
+const reads={chart:0,news:0,cal:0};
+const dec=()=>pair==0?2:5, f=(v,d=dec())=>v==null||isNaN(v)?"--":v.toFixed(d);
+
+function chart(){try{$("tv").innerHTML="";new TradingView.widget({container_id:"tv",symbol:PAIRS[pair][1],interval:"D",theme:"dark",autosize:true,timezone:"Etc/UTC",locale:"en",hide_side_toolbar:true})}catch(e){$("tv").innerHTML='<div class="msg">Chart could not load (needs internet).</div>'}}
+function drawPairs(){$("pairs").innerHTML="";PAIRS.forEach((p,i)=>{const b=document.createElement("button");b.className="pair"+(i==pair?" on":"");b.innerHTML=p[0]+"<br><small style='color:#8fa0bf'>"+p[3]+"</small>";b.onclick=()=>{pair=i;C=[];S=null;drawPairs();chart();reset();$("live").disabled=!p[2];$("livemsg").textContent=p[2]?"Tap for free live daily prices.":"Gold has no free live source here — import a CSV.";};$("pairs").appendChild(b)})}
+(function(){const s=document.createElement("script");s.src="https://s3.tradingview.com/tv.js";s.onload=chart;s.onerror=()=>$("tv").innerHTML='<div class="msg">Chart could not load.</div>';document.head.appendChild(s)})();
+drawPairs();
+
+/* news widget */
+(function(){const c=document.createElement("div");c.className="tradingview-widget-container__widget";$("tvnews").appendChild(c);
+const s=document.createElement("script");s.src="https://s3.tradingview.com/external-embedding/embed-widget-timeline.js";s.async=true;
+s.innerHTML=JSON.stringify({feedMode:"all_symbols",isTransparent:true,displayMode:"regular",width:"100%",height:"400",colorTheme:"dark",locale:"en"});
+$("tvnews").appendChild(s)})();
+
+/* reading bias buttons */
+document.querySelectorAll("button.bias").forEach(b=>{b.onclick=()=>{const g=b.dataset.g,v=+b.dataset.v;reads[g]=v;
+ document.querySelectorAll('button.bias[data-g="'+g+'"]').forEach(x=>x.classList.toggle("on",x===b));
+ if(S)show()}});
+
+/* auto-read pasted text */
+function classify(text){
+ if(!text||!text.trim())return 0;
+ const t=" "+text.toLowerCase()+" ";
+ const bull=["bullish","buy signal","going long","long setup","uptrend","upward","higher high","higher low","breakout","breaking out","strong demand","positive for","rally","rallying","rising","gaining","strength","support held","support holding","hawkish"];
+ const bear=["bearish","sell signal","going short","short setup","downtrend","downward","lower high","lower low","breakdown","breaking down","weak demand","negative for","selling off","falling","dropping","losing","weakness","resistance held","resistance holding","dovish"];
+ let b=0,s=0;bull.forEach(w=>{if(t.includes(w))b++});bear.forEach(w=>{if(t.includes(w))s++});
+ return b>s?1:s>b?-1:0}
+["chart","news","cal"].forEach(g=>{$("t_"+g).addEventListener("input",()=>{
+ const v=classify($("t_"+g).value);reads[g]=v;
+ document.querySelectorAll('button.bias[data-g="'+g+'"]').forEach(x=>x.classList.toggle("on",+x.dataset.v===v));
+ if(S)show()})});
+
+/* indicators */
+function ema(a,n){const k=2/(n+1),r=[];let e=a[0];for(let i=0;i<a.length;i++){e=i?a[i]*k+e*(1-k):a[0];r.push(e)}return r}
+function rsiF(c,n=14){const r=new Array(c.length).fill(null);let g=0,l=0;for(let i=1;i<c.length;i++){const d=c[i]-c[i-1],u=Math.max(d,0),w=Math.max(-d,0);if(i<=n){g+=u;l+=w;if(i==n){g/=n;l/=n;r[i]=l==0?100:100-100/(1+g/l)}}else{g=(g*(n-1)+u)/n;l=(l*(n-1)+w)/n;r[i]=l==0?100:100-100/(1+g/l)}}return r}
+function atrF(cs,n=14){const r=new Array(cs.length).fill(null);let a=0;for(let i=1;i<cs.length;i++){const tr=Math.max(cs[i].h-cs[i].l,Math.abs(cs[i].h-cs[i-1].c),Math.abs(cs[i].l-cs[i-1].c));if(i<=n){a+=tr;if(i==n){a/=n;r[i]=a}}else{a=(a*(n-1)+tr)/n;r[i]=a}}return r}
+function compute(){const cl=C.map(x=>x.c),e50=ema(cl,50),e200=ema(cl,200),e12=ema(cl,12),e26=ema(cl,26),m=e12.map((v,i)=>v-e26[i]),sg=ema(m,9),hist=m.map((v,i)=>v-sg[i]);S={cl,e50,e200,hist,rs:rsiF(cl),at:atrF(C)}}
+function score(i){const c=S.cl[i];let s=0;if(c>S.e50[i]&&S.e50[i]>S.e200[i])s+=2;else if(c<S.e50[i]&&S.e50[i]<S.e200[i])s-=2;else s+=c>S.e50[i]?1:-1;s+=S.hist[i]>0?1:-1;if(S.rs[i]>55)s++;else if(S.rs[i]<45)s--;return s}
+
+function reset(){["e50","e200","rsi","macd","atr"].forEach(k=>$(k).textContent="--");$("cnt").textContent="0";$("sig").textContent="WAIT";$("sig").className="sig WAIT";$("sigmsg").textContent="Load price data and set your readings first.";["en","sl","tp1","tp2","score","combo"].forEach(k=>$(k).textContent="--")}
+
+/* live fetch (EUR/USD, GBP/USD only) */
+$("live").onclick=async()=>{
+ const base=PAIRS[pair][2];if(!base){$("livemsg").className="msg err";$("livemsg").textContent="Gold isn't available live here — import a CSV instead.";return}
+ $("livemsg").className="msg";$("livemsg").textContent="Fetching...";
+ try{
+  const end=new Date(),start=new Date();start.setDate(end.getDate()-400);
+  const fmt=d=>d.toISOString().slice(0,10);
+  const url=`https://api.frankfurter.app/${fmt(start)}..${fmt(end)}?from=${base}&to=USD`;
+  const res=await fetch(url);if(!res.ok)throw new Error("Server returned "+res.status);
+  const j=await res.json();const dates=Object.keys(j.rates).sort();
+  if(dates.length<30)throw new Error("Only "+dates.length+" days returned — try again later.");
+  C=dates.map(d=>{const v=j.rates[d].USD;return{t:Date.parse(d),o:v,h:v,l:v,c:v}});
+  compute();show();
+  $("livemsg").className="msg ok";$("livemsg").textContent="Loaded "+C.length+" daily closes for "+PAIRS[pair][0]+" (source: frankfurter.app / ECB).";
+  $("impmsg").textContent="Using live data, not a CSV.";
+ }catch(e){$("livemsg").className="msg err";$("livemsg").textContent="Could not fetch live data: "+e.message}};
+
+/* CSV import (works for any pair, main path for gold) */
+function parse(text){
+ text=text.replace(/^\uFEFF/,"");const lines=text.split(/\r?\n/).filter(x=>x.trim());
+ if(lines.length<2)throw new Error("The file has fewer than 2 lines.");
+ const d=[",",";","\t"].map(s=>[s,lines[0].split(s).length]).sort((a,b)=>b[1]-a[1])[0][0];
+ const sp=l=>l.split(d).map(x=>x.trim().replace(/^"|"$/g,""));
+ const h=sp(lines[0]).map(x=>x.toLowerCase().replace(/[<>]/g,""));
+ const hasH=h.some(x=>/[a-z]/.test(x));let ix={date:0,time:1,open:2,high:3,low:4,close:5},st=0;
+ if(hasH){st=1;const fd=(...k)=>h.findIndex(x=>k.includes(x));ix={date:fd("date","datetime","timestamp","gmt time"),time:fd("time"),open:fd("open"),high:fd("high"),low:fd("low"),close:fd("close")};
+  if(ix.open<0||ix.high<0||ix.low<0||ix.close<0)throw new Error("Can't find Open/High/Low/Close columns. First line was:\n"+lines[0])}
+ const num=s=>parseFloat(d==";"?String(s).replace(",","."):s);
+ const out=[];let bad=0;
+ for(let i=st;i<lines.length;i++){const p=sp(lines[i]),o=num(p[ix.open]),h2=num(p[ix.high]),l=num(p[ix.low]),c=num(p[ix.close]);
+  if([o,h2,l,c].some(isNaN)||h2<l){bad++;continue}
+  let t=(ix.date>=0?p[ix.date]:"")+(ix.time>=0&&ix.time!==ix.date?" "+p[ix.time]:"");
+  t=t.trim().replace(/^(\d{4})\.(\d{2})\.(\d{2})/,"$1-$2-$3").replace(" ","T");
+  out.push({t:Date.parse(t),o,h:h2,l,c})}
+ if(out.length>1&&!isNaN(out[0].t)&&!isNaN(out[out.length-1].t)&&out[0].t>out[out.length-1].t)out.reverse();
+ return{out,bad,total:lines.length-st}}
+
+$("imp").onclick=()=>{
+ const m=$("impmsg");m.className="msg";m.textContent="Working...";
+ const file=$("csv").files[0];
+ if(!file){m.className="msg err";m.textContent="No file chosen. Tap Choose File first.";return}
+ const rd=new FileReader();
+ rd.onerror=()=>{m.className="msg err";m.textContent="Could not read the file."};
+ rd.onload=()=>{try{
+  const r=parse(String(rd.result));C=r.out;
+  if(C.length<30)throw new Error("Only "+C.length+" usable candles found ("+r.bad+" rows skipped out of "+r.total+"). Need at least 30, ideally 220+.");
+  compute();show();
+  m.className="msg ok";m.textContent="Imported "+C.length+" candles for "+PAIRS[pair][0]+" ("+r.bad+" rows skipped)."+(C.length<220?"\nUnder 220 candles: EMA 200 is not reliable.":"")
+ }catch(e){m.className="msg err";m.textContent="Import problem: "+e.message}};
+ rd.readAsText(file)};
+
+function show(){
+ const i=C.length-1,a=S.at[i]||0;
+ $("cnt").textContent=C.length;$("e50").textContent=f(S.e50[i]);$("e200").textContent=f(S.e200[i]);$("rsi").textContent=f(S.rs[i],1);$("macd").textContent=S.hist[i].toFixed(6);$("atr").textContent=f(a);
+ const ts=score(i),c=S.cl[i];
+ const combo=ts*2+reads.chart+reads.news+reads.cal;
+ $("score").textContent=(ts>0?"+":"")+ts;$("combo").textContent=(combo>0?"+":"")+combo;
+ let d="WAIT",why="";
+ if($("avoid").checked){why="Calendar reading flags a high-impact event due soon, so the engine forces WAIT."}
+ else if(combo>=4){d="BUY";why="Technical score and your pasted readings line up bullish."}
+ else if(combo<=-4){d="SELL";why="Technical score and your pasted readings line up bearish."}
+ else{
+  why="No clear majority between the technicals and your readings, so the engine waits.";
+  const e=S.e50[i],above=c>e;
+  if(ts>0&&!above)why+="\nWATCH FOR: price closing above EMA50 ("+f(e)+") to strengthen this toward BUY.";
+  else if(ts<0&&above)why+="\nWATCH FOR: price closing below EMA50 ("+f(e)+") to strengthen this toward SELL.";
+  else if(ts>0&&above)why+="\nWATCH FOR: a bullish chart/news reading, or RSI pushing above 55, to confirm BUY.";
+  else if(ts<0&&!above)why+="\nWATCH FOR: a bearish chart/news reading, or RSI dropping below 45, to confirm SELL.";
+  else why+="\nWATCH FOR: EMA50 crossing EMA200, or RSI moving past 55 (bullish) / 45 (bearish), before there's any edge to act on.";
+ }
+ $("sig").textContent=d;$("sig").className="sig "+d;$("sigmsg").textContent=why;
+ const lastT=C[i].t,lastDate=isNaN(lastT)?"unknown date":new Date(lastT).toLocaleDateString();
+ let tb="Based on the candle that closed: "+lastDate+". Checked just now: "+new Date().toLocaleString()+".";
+ if(d!="WAIT")tb+="\nThis is daily data, so act on it now if you're going to — don't save it for later. Check the calendar above first: skip it if a high-impact event is due in the next hour.";
+ $("timebox").textContent=tb;
+ if(d=="WAIT"||!a){["en","sl","tp1","tp2"].forEach(k=>$(k).textContent="--")}
+ else{const k=d=="BUY"?1:-1,risk=1.5*a;$("en").textContent=f(c);$("sl").textContent=f(c-k*risk);$("tp1").textContent=f(c+k*risk*2);$("tp2").textContent=f(c+k*risk*3);}
+}
+
+/* risk */
+$("rc").onclick=()=>{const b=+$("bal").value,r=+$("rk").value,en=+$("rEn").value,sl=+$("rSl").value;
+ if(!en||!sl||en==sl){$("rmsg").textContent="Enter a different entry and stop loss.";return}
+ const amt=b*r/100,pips=Math.abs(en-sl)/(pair==0?0.01:0.0001);
+ let t="Risk amount: $"+amt.toFixed(2)+"\nStop distance: "+pips.toFixed(1)+" pips";
+ t+=pair==0?"\nGold lot size: check the pip value for XAUUSD in MT5.":"\nApprox. lot size: "+(amt/(pips*10)).toFixed(2)+" (about $10 per pip per 1.00 lot)";
+ $("rmsg").textContent=t};
+
+/* journal */
+function J(){try{return JSON.parse(localStorage.getItem("fx_journal")||"[]")}catch(e){return[]}}
+function jShow(){const j=J();$("jt").textContent=j.length;$("jw").textContent=j.length?Math.round(j.filter(x=>x.r>0).length/j.length*100)+"%":"0%"}
+$("js").onclick=()=>{const r=parseFloat($("jr").value);if(isNaN(r))return;const j=J();j.push({d:new Date().toISOString(),p:$("jp").value,r,n:$("jn").value});
+ try{localStorage.setItem("fx_journal",JSON.stringify(j))}catch(e){}$("jr").value="";$("jn").value="";jShow()};
+$("jx").onclick=()=>{const j=J(),t="Date,Pair,ResultR,Notes\n"+j.map(x=>[x.d,x.p,x.r,'"'+(x.n||"").replace(/"/g,"'")+'"'].join(",")).join("\n"),a=document.createElement("a");
+ a.href=URL.createObjectURL(new Blob([t],{type:"text/csv"}));a.download="journal.csv";a.click()};
+jShow();$("live").disabled=!PAIRS[0][2];
+reset();
+</script></body></html>
